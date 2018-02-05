@@ -1,0 +1,14 @@
+d_conv1gate
+d_conv2gate
+g_deconv0gate
+g_deconv1gate
+m_conv2gate
+m_conv3gate
+m_conv4gate
+m_conv5gate
+m_conv6gate
+n_conv2gate
+n_conv3gate
+n_conv4gate
+n_conv5gate
+n_conv6gate

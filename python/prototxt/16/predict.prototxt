@@ -1,0 +1,662 @@
+name: "resnet"
+#num_flow: 12
+input_blob {
+  name: "data"
+	num: 1
+	channels: 3
+	height: 320
+	width: 320
+}
+layer {
+	name: "data_pad"
+	type: "PadImage"
+	bottom: "data"                      bottom_flow: -1
+	top: "data_pad"                     top_flow: -1
+	convolution_param {
+		pad: 40
+	}
+}
+#########################################
+layer {
+		name: "d_conv0"
+		type: "CuDNNConvolution"
+		bottom: "data_pad"    bottom_flow: -1
+		top: "d_bn0"       top_flow: 0
+		convolution_param {
+			num_output: 16
+			group: 1
+			pad: 4
+			kernel_size: 9
+			stride: 1
+			bias_term: true
+		}
+		param { 
+		  lr_mult: 1
+		  decay_mult: 1
+		}
+		param { 
+		  lr_mult: 2
+		  decay_mult: 0
+		}
+		include {
+			need_backward: true
+		}
+	}
+layer {
+  name: "d_relu0"
+  type: "ReLU"
+  bottom: "d_bn0"   bottom_flow: 0
+  top: "d_bn0"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: true
+	}
+}
+
+
+layer {
+  name: "d_conv1gate"
+  type: "CuDNNConvolution"
+  bottom: "d_bn0"     bottom_flow: 0
+  top: "d_conv1"        top_flow: 0
+  convolution_param {
+		num_output: 32
+		group: 1
+		pad: 1
+		kernel_size: 3
+		stride: 2
+		bias_term: false
+	}
+}
+layer {
+		name: "d_bn1"
+		type: "InstanceCuDNNBatchNorm"
+		bottom: "d_conv1"   bottom_flow: 0
+		top: "d_bn1"      top_flow:    0
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+	}
+	layer {
+  name: "d_relu1"
+  type: "ReLU"
+  bottom: "d_bn1"   bottom_flow: 0
+  top: "d_bn1"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: true
+	}
+}
+
+layer {
+  name: "d_conv2gate"
+  type: "CuDNNConvolution"
+  bottom: "d_bn1"     bottom_flow: 0
+  top: "d_conv2"        top_flow: 0
+  convolution_param {
+		num_output: 64
+		group: 1
+		pad: 1
+		kernel_size: 3
+		stride: 2
+		bias_term: false
+	}
+}
+layer {
+		name: "d_bn2"
+		type: "InstanceCuDNNBatchNorm"
+		bottom: "d_conv2"   bottom_flow: 0
+		top: "d_bn2"      top_flow:    0
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+	}
+	layer {
+  name: "d_relu2"
+  type: "ReLU"
+  bottom: "d_bn2"   bottom_flow: 0
+  top: "d_bn2"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: true
+	}
+}
+
+layer {
+  name: "m_conv2gate"
+  type: "CuDNNConvolution"
+  bottom: "d_bn2"     bottom_flow: 0
+  top: "m_conv2"        top_flow: 0
+  convolution_param {
+		num_output: 64
+		group: 1
+		pad: 0
+		kernel_size: 3
+		stride: 1
+		bias_term: false
+	}
+}
+layer {
+		name: "m_bn2"
+		type: "InstanceCuDNNBatchNorm"
+		bottom: "m_conv2"   bottom_flow: 0
+		top: "m_bn2"      top_flow:    0
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+	}
+	layer {
+  name: "m_relu2"
+  type: "ReLU"
+  bottom: "m_bn2"   bottom_flow: 0
+  top: "m_bn2"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: true
+	}
+}
+
+layer {
+  name: "n_conv2gate"
+  type: "CuDNNConvolution"
+  bottom: "m_bn2"     bottom_flow: 0
+  top: "n_conv2"        top_flow: 0
+  convolution_param {
+		num_output: 64
+		group: 1
+		pad: 0
+		kernel_size: 3
+		stride: 1
+		bias_term: false
+	}
+}
+layer {
+		name: "n_bn2"
+		type: "InstanceCuDNNBatchNorm"
+		bottom: "n_conv2"   bottom_flow: 0
+		top: "n_bn2"      top_flow:    0
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+	}
+	layer {
+  name: "n_relu2"
+  type: "ReLU"
+  bottom: "n_bn2"   bottom_flow: 0
+  top: "n_bn2"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: true
+	}
+}
+
+
+layer {
+  name: "m_conv3gate"
+  type: "CuDNNConvolution"
+  bottom: "n_bn2"     bottom_flow: 0
+  top: "m_conv3"        top_flow: 0
+  convolution_param {
+		num_output: 64
+		group: 1
+		pad: 0
+		kernel_size: 3
+		stride: 1
+		bias_term: false
+	}
+}
+layer {
+		name: "m_bn3"
+		type: "InstanceCuDNNBatchNorm"
+		bottom: "m_conv3"   bottom_flow: 0
+		top: "m_bn3"      top_flow:    0
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+	}
+	layer {
+  name: "m_relu3"
+  type: "ReLU"
+  bottom: "m_bn3"   bottom_flow: 0
+  top: "m_bn3"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: true
+	}
+}
+
+layer {
+  name: "n_conv3gate"
+  type: "CuDNNConvolution"
+  bottom: "m_bn3"     bottom_flow: 0
+  top: "n_conv3"        top_flow: 0
+  convolution_param {
+		num_output: 64
+		group: 1
+		pad: 0
+		kernel_size: 3
+		stride: 1
+		bias_term: false
+	}
+}
+layer {
+		name: "n_bn3"
+		type: "InstanceCuDNNBatchNorm"
+		bottom: "n_conv3"   bottom_flow: 0
+		top: "n_bn3"      top_flow:    0
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+	}
+	layer {
+  name: "n_relu3"
+  type: "ReLU"
+  bottom: "n_bn3"   bottom_flow: 0
+  top: "n_bn3"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: true
+	}
+}
+
+
+layer {
+  name: "m_conv4gate"
+  type: "CuDNNConvolution"
+  bottom: "n_bn3"     bottom_flow: 0
+  top: "m_conv4"        top_flow: 0
+  convolution_param {
+		num_output: 64
+		group: 1
+		pad: 0
+		kernel_size: 3
+		stride: 1
+		bias_term: false
+	}
+}
+layer {
+		name: "m_bn4"
+		type: "InstanceCuDNNBatchNorm"
+		bottom: "m_conv4"   bottom_flow: 0
+		top: "m_bn4"      top_flow:    0
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+	}
+	layer {
+  name: "m_relu4"
+  type: "ReLU"
+  bottom: "m_bn4"   bottom_flow: 0
+  top: "m_bn4"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: true
+	}
+}
+
+layer {
+  name: "n_conv4gate"
+  type: "CuDNNConvolution"
+  bottom: "m_bn4"     bottom_flow: 0
+  top: "n_conv4"        top_flow: 0
+  convolution_param {
+		num_output: 64
+		group: 1
+		pad: 0
+		kernel_size: 3
+		stride: 1
+		bias_term: false
+	}
+}
+layer {
+		name: "n_bn4"
+		type: "InstanceCuDNNBatchNorm"
+		bottom: "n_conv4"   bottom_flow: 0
+		top: "n_bn4"      top_flow:    0
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+	}
+	layer {
+  name: "n_relu4"
+  type: "ReLU"
+  bottom: "n_bn4"   bottom_flow: 0
+  top: "n_bn4"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: true
+	}
+}
+
+
+layer {
+  name: "m_conv5gate"
+  type: "CuDNNConvolution"
+  bottom: "n_bn4"     bottom_flow: 0
+  top: "m_conv5"        top_flow: 0
+  convolution_param {
+		num_output: 64
+		group: 1
+		pad: 0
+		kernel_size: 3
+		stride: 1
+		bias_term: false
+	}
+}
+layer {
+		name: "m_bn5"
+		type: "InstanceCuDNNBatchNorm"
+		bottom: "m_conv5"   bottom_flow: 0
+		top: "m_bn5"      top_flow:    0
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+	}
+	layer {
+  name: "m_relu5"
+  type: "ReLU"
+  bottom: "m_bn5"   bottom_flow: 0
+  top: "m_bn5"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: true
+	}
+}
+
+
+layer {
+  name: "n_conv5gate"
+  type: "CuDNNConvolution"
+  bottom: "m_bn5"     bottom_flow: 0
+  top: "n_conv5"        top_flow: 0
+  convolution_param {
+		num_output: 64
+		group: 1
+		pad: 0
+		kernel_size: 3
+		stride: 1
+		bias_term: false
+	}
+}
+layer {
+		name: "n_bn5"
+		type: "InstanceCuDNNBatchNorm"
+		bottom: "n_conv5"   bottom_flow: 0
+		top: "n_bn5"      top_flow:    0
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+	}
+	layer {
+  name: "n_relu5"
+  type: "ReLU"
+  bottom: "n_bn5"   bottom_flow: 0
+  top: "n_bn5"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: true
+	}
+}
+
+
+layer {
+  name: "m_conv6gate"
+  type: "CuDNNConvolution"
+  bottom: "n_bn5"     bottom_flow: 0
+  top: "m_conv6"        top_flow: 0
+  convolution_param {
+		num_output: 64
+		group: 1
+		pad: 0
+		kernel_size: 3
+		stride: 1
+		bias_term: false
+	}
+}
+layer {
+		name: "m_bn6"
+		type: "InstanceCuDNNBatchNorm"
+		bottom: "m_conv6"   bottom_flow: 0
+		top: "m_bn6"      top_flow:    0
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+	}
+	layer {
+  name: "m_relu6"
+  type: "ReLU"
+  bottom: "m_bn6"   bottom_flow: 0
+  top: "m_bn6"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: true
+	}
+}
+
+
+layer {
+  name: "n_conv6gate"
+  type: "CuDNNConvolution"
+  bottom: "m_bn6"     bottom_flow: 0
+  top: "n_conv6"        top_flow: 0
+  convolution_param {
+		num_output: 64
+		group: 1
+		pad: 0
+		kernel_size: 3
+		stride: 1
+		bias_term: false
+	}
+}
+layer {
+		name: "n_bn6"
+		type: "InstanceCuDNNBatchNorm"
+		bottom: "n_conv6"   bottom_flow: 0
+		top: "n_bn6"      top_flow:    0
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+	}
+	layer {
+  name: "n_relu6"
+  type: "ReLU"
+  bottom: "n_bn6"   bottom_flow: 0
+  top: "n_bn6"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: true
+	}
+}
+
+layer {
+  name: "g_deconv0gate"
+  type: "CuDNNDeConvolution"
+  bottom: "n_bn6"     bottom_flow: 0
+  top: "g_deconv0"        top_flow: 0
+  convolution_param {
+		num_output: 32
+		group: 1
+		pad: 1
+		kernel_size: 4
+		stride: 2
+		bias_term: false
+	}
+}
+layer {
+		name: "g_bn1"
+		type: "InstanceCuDNNBatchNorm"
+		bottom: "g_deconv0"   bottom_flow: 0
+		top: "g_bn0"      top_flow:    0
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+	}
+	layer {
+  name: "g_relu0"
+  type: "ReLU"
+  bottom: "g_bn0"   bottom_flow: 0
+  top: "g_bn0"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: true
+	}
+}
+
+
+layer {
+  name: "g_deconv1gate"
+  type: "CuDNNDeConvolution"
+  bottom: "g_bn0"     bottom_flow: 0
+  top: "g_deconv1"        top_flow: 0
+  convolution_param {
+		num_output: 16
+		group: 1
+		pad: 1
+		kernel_size: 4
+		stride: 2
+		bias_term: false
+	}
+}
+layer {
+		name: "g_bn2"
+		type: "InstanceCuDNNBatchNorm"
+		bottom: "g_deconv1"   bottom_flow: 0
+		top: "g_bn1"      top_flow:    0
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param {
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+	}
+	layer {
+  name: "g_relu1"
+  type: "ReLU"
+  bottom: "g_bn1"   bottom_flow: 0
+  top: "g_bn1"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: true
+	}
+}
+layer {
+	name: "g_deconv2"
+	type: "CuDNNDeConvolution"
+	bottom: "g_bn1"     bottom_flow: 0
+	top: "g_deconv2"				 top_flow: 0
+	convolution_param {
+		num_output: 3
+		group: 1
+		pad: 4
+		kernel_size: 9
+		stride: 1
+    bias_term: false
+	}
+	param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+}
+layer {
+	name: "reconstruct_image"     
+	type:  "ScaleBias"
+	bottom: "g_deconv2"                    bottom_flow:  0 
+	top: "reconstruct_image"               top_flow:     0
+}

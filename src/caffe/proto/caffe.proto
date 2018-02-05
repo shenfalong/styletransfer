@@ -1,0 +1,356 @@
+syntax = "proto2";
+
+package caffe;
+
+message BlobShape {
+  repeated int64 dim = 5 [packed = true];
+  
+  optional int32 num = 1;
+  optional int32 channels = 2;
+  optional int32 height = 3;
+  optional int32 width = 4;
+  
+  optional bool forced = 6 [default = false];
+}
+
+message BlobProto {
+  repeated float data = 5 [packed = true];
+  repeated float diff = 6 [packed = true];
+	optional BlobShape shape = 7;   // just for communication between old and new caffe
+
+  optional int32 num = 1 [default = 0];
+  optional int32 channels = 2 [default = 0];
+  optional int32 height = 3 [default = 0];
+  optional int32 width = 4 [default = 0];
+}
+
+
+message Datum {
+  optional int32 channels = 1;
+  optional int32 height = 2;
+  optional int32 width = 3;
+  // the actual image data, in bytes
+  optional bytes data = 4;
+  optional int32 label = 5;
+  // Optionally, the datum could also hold float data.
+  repeated float float_data = 6;
+  optional bool encoded = 7 [default = false];
+  repeated int32 multi_label = 8;
+}
+
+message FillerParameter {
+  // The filler type.
+  optional string type = 1 [default = "msra"];
+
+  // Normalize the filler variance by fan_in, fan_out, or their average.
+  // Applies to 'xavier' and 'msra' fillers.
+  optional string variance_norm = 2 [default = "fan_in"];
+  
+  optional float mean = 3;
+  optional float std = 4;
+}
+
+message InnerProductParameter {
+  optional uint32 num_output = 1; 
+  optional bool bias_term = 2 [default = false];  
+  optional FillerParameter weight_filler = 3; 
+}
+
+message ConvolutionParameter {
+  optional uint32 num_output = 1; 
+  optional bool bias_term = 2 [default = false]; 
+  optional uint32 pad = 3 [default = 0];
+  optional uint32 kernel_size = 4; 
+  optional uint32 stride = 5 [default = 1]; 
+  optional uint32 filter_stride = 6 [default = 1]; 
+  optional FillerParameter weight_filler = 7;
+  optional uint32 group = 8 [default = 1];
+  optional string weight_file = 9;
+  optional uint32 multi = 10;
+  optional bool random_field = 11 [default = false];
+}
+
+
+
+message DataParameter {
+  repeated string source = 1;
+  optional string root_folder = 2 [default = ""];
+  optional uint32 batch_size = 3 [default = 1];
+  optional bool shuffle = 5 [default = false];
+  optional bool random_skip = 6 [default = false];
+}
+message TransformationParameter {
+ 
+  optional bool mirror = 1 [default = true];
+  optional int32 crop_size = 2 [default = 0];
+  optional int32 augment_size = 3 [default = 0];
+  repeated float mean_value = 4;
+  optional bool alter_color = 5 [default = true];
+  optional bool pad_img = 6 [default = false];
+  optional bool simple = 7 [default = false];
+  optional bool center_crop = 8 [default = false];
+  optional int32 ignore_label = 9 [default = 255];
+	optional bool random_scale = 10 [default = true];
+  optional bool random_aspect = 11 [default = false];
+
+  optional int32 resolution = 12 [default = 1];
+  optional int32 classes = 13 [default = 21];
+  optional bool random_rotate = 14 [default = false];
+}
+
+message ParamSpec {
+  optional float lr_mult = 1;
+  optional float decay_mult = 2;
+  optional float weight_norm = 3;
+  optional float weight_penalty = 4 [default = 0];
+}
+message LayerProp {
+  optional float loss_weight = 2 [default = 0];
+  optional bool need_backward = 3 [default = true];
+  optional float sec_loss_weight = 4 [default = 0];
+  optional float norm_value = 5 [default = 1];
+}  
+
+message LayerParameter {
+  optional string name = 1; // the layer name
+  optional string type = 2; // the string to specify the layer type
+  repeated string bottom = 3; // the name of the bottom blobs
+  repeated string top = 4; // the name of the top blobs
+  repeated int32 bottom_flow = 101;
+  repeated int32 top_flow = 102;
+  
+
+  
+  optional LayerProp include = 5;
+  repeated ParamSpec param = 6;
+	repeated BlobProto blobs = 7;
+ 	
+	repeated LayerParameter branch = 8;
+	optional string bind_key = 9;
+	optional string bind_value = 10;
+  optional DataParameter data_param = 25;	
+  optional TransformationParameter transform_param = 26;
+  optional ConvolutionParameter convolution_param = 27;
+  optional LossParameter loss_param = 28;
+  optional PoolingParameter pooling_param = 29;
+  optional InnerProductParameter inner_product_param = 30;
+  optional BatchNormParameter batch_norm_param = 31;
+  optional ShortcutParameter shortcut_param = 32;
+  optional AccuracyParameter accuracy_param = 33;
+  optional NormalizeParameter norm_param = 34;
+  optional ContextPoolingParameter context_pooling_param = 35;
+  optional CRFParameter crf_param = 36;
+  optional EltwiseParameter eltwise_param = 37;
+  optional ParseEvaluateParameter parse_evaluate_param = 38;
+  optional DropoutParameter dropout_param = 39;
+  optional InterpParameter interp_param = 40;
+  optional SecParameter sec_param = 41;
+  optional NoiseParameter noise_param = 42;
+  optional ReLUParameter relu_param = 43;
+  optional BlobShape shape_param = 44;
+  optional ConcatParameter concat_param = 45;
+  repeated BlobProto first_moment = 46;
+	repeated BlobProto second_moment = 47;
+	repeated int32 bottom_index = 48;
+}
+message ConcatParameter {
+	repeated int32 channels = 1;
+}
+
+message ReLUParameter {
+	optional float negative_slope = 1 [default = 0];
+}
+
+message NoiseParameter {
+	optional int32 num = 1;
+	optional int32 channels = 2;
+	optional int32 classes = 3;
+}
+
+
+message SecParameter {
+  optional string sec_feature = 1;
+}
+message InterpParameter {
+  optional float interp_ratio = 1; // interp ratio
+  optional int32 stride = 2;
+  optional int32 kernel_size = 3;
+  optional int32 num_classes = 4;
+}
+message DropoutParameter {
+  optional float dropout_ratio = 1 [default = 0.5]; // dropout ratio
+}
+
+message ParseEvaluateParameter {
+  optional int32 num_labels = 1;
+  repeated int32 ignore_label = 2;
+}
+message EltwiseParameter {
+  optional string operation = 1 [default = "sum"]; // element-wise operation
+  repeated float coeff = 2; // blob-wise coefficient for SUM operation
+
+  // Whether to use an asymptotically slower (for >2 inputs) but stabler method
+  // of computing the gradient for the PROD operation. (No effect for SUM op.)
+  optional bool stable_prod_grad = 3 [default = true];
+  
+  repeated bool backward = 4; // blob-wise coefficient for SUM operation
+}
+message CRFParameter {
+	optional int32 max_iter = 1 [default = 1];
+	optional float radius = 2;
+	optional float scale = 3 [default = 0.01];
+	optional float eps = 4 [default = 0.01];
+	optional float alpha = 5 [default = 0.01];
+}
+message ContextPoolingParameter {
+  // Pad, kernel size, and stride are all given as a single value for equal
+  // dimensions in height and width or as Y, X pairs.
+  optional uint32 context_h = 1 [default = 0]; // The pooled output height
+  optional uint32 context_w = 2 [default = 0]; // The pooled output width
+  optional string pool = 3;
+  optional string mode =4;
+}
+
+message NormalizeParameter {
+  optional float scale_value = 1 [default = 1];
+  optional float eps = 2 [default = 1e-10];
+}
+
+
+message AccuracyParameter {
+  optional uint32 top_k = 1 [default = 1];
+  optional int32 ignore_label = 2;
+}
+message ShortcutParameter { 
+  optional float scale = 1;
+  optional float dropout_ratio = 2 [default = 0.5];
+  optional uint32 groups = 3 [default = 1];
+}
+
+message BatchNormParameter {
+  optional string bn_state = 1 [default = "learned"];
+}
+
+message InputBlob {
+	optional string name = 1;
+	optional int32 num = 2;
+	optional int32 channels = 3;
+	optional int32 height = 4;
+	optional int32 width = 5;
+}
+
+message NetParameter {
+  optional string name = 1; // consider giving the network a name
+  
+  
+  repeated LayerParameter layer = 100; // protobuf copy the field by the order number, it can not be changed for properly copyed between our lib and caffe
+  
+  
+  
+  repeated string input = 3; // The input to the network
+
+  
+  repeated InputBlob input_blob = 5;
+  optional int32 num_flow = 6 [default = 0];
+  
+
+}
+
+message NetOptimizer {
+	optional float base_lr = 1; 
+	optional string type = 2 [default = "SGD"];
+	optional string lr_policy = 3; 
+	
+	optional float gamma = 4; 
+  optional float power = 5; 
+  optional int32 stepsize = 6;
+  repeated int32 stepvalue = 7;
+  
+	optional float momentum = 8 [default = 0.9]; 
+  optional float weight_decay = 9; 
+  
+  
+  optional int32 display = 11; 
+  
+  optional int32 average_loss = 12 [default = 1];  
+  optional float momentum2 = 13 [default = 0.999]; 
+	optional float delta = 14 [default = 1e-8];
+}
+//--------------------------------------
+message SolverState {
+	optional int32 iter = 1; // The current iteration
+	optional string learned_net = 2; // The file that stores the learned net.
+	optional NetState net_state = 3;
+	optional string d_state_file = 4;
+	optional string g_state_file = 5;
+}
+message NetState {
+  repeated LayerParameter layer = 1; // The history for sgd solvers
+  optional int32 adam_iter = 2;
+}
+//--------------------------------------
+message SolverParameter {
+	optional string net = 1;
+	
+	optional NetParameter net_param = 2;
+	optional NetOptimizer net_opt = 3;
+
+	optional int32 max_iter = 4; 
+	
+  
+  
+  optional bool test_initialization = 5;
+  optional int32 test_interval = 6;
+  optional int32 test_iter = 7;
+  optional string eval_type = 8 [default = "classification"];
+  
+  
+  optional bool accumulate_batch_norm = 9 [default = false];
+  optional uint32 accumulate_test_iter = 10;
+  optional uint32 accumulate_max_iter = 11;
+  
+  optional int32 iter_size = 12 [default = 1];
+  optional int32 snapshot = 13 [default = 0]; 
+  optional string snapshot_prefix = 14; 
+  optional string solver_type = 15 [default = "CNN"];
+  optional int32 display = 16; 
+  optional string bn_state = 18 [default = "learned"];
+  optional string drop_state = 19 [default = "rand"];
+  optional bool second_pass = 20 [default = false];
+  optional string test_net = 21;
+  
+  
+  optional NetOptimizer g_net_opt = 100;
+	optional NetOptimizer d_net_opt = 101;
+  
+  optional string g_net = 102;
+  optional NetParameter g_net_param = 103;
+  
+ 
+	optional string d_net = 106;
+	optional NetParameter d_net_param = 107;
+
+	
+	optional string d_interp_net = 110;
+	optional string d_aux_net = 111;
+	optional NetParameter d_interp_param = 112;
+	optional NetParameter d_aux_param = 113;
+}
+
+
+
+message PoolingParameter {
+
+  optional string pool = 1 [default = "ave"]; // The pooling method
+  optional uint32 pad = 2 [default = 0]; // The padding size (equal in Y, X)
+  optional uint32 kernel_size = 3; // The kernel size (square)
+  optional uint32 stride = 4 [default = 1]; // The stride (equal in Y, X)
+  
+  optional bool global_pool = 5 [default = false];
+}
+
+message LossParameter {
+  optional int32 ignore_label = 1;
+  optional float keep_portion = 2 [default = 0.5];
+  optional bool single_term = 3 [default = false];
+}

@@ -1,0 +1,326 @@
+name: "resnet"
+#num_flow: 12
+input_blob {
+  name: "hidden_feat"
+	num: 1
+	channels: 1792
+	height: 1
+	width: 1
+}
+##------------------------------------------------
+layer {
+	name: "concat_hidden"
+	type: "DeConcat"
+	bottom: "hidden_feat"               bottom_flow: -1
+	top: "hidden_d_conv1"                 top_flow: -1
+	top: "hidden_d_conv2"                 top_flow: -1
+	top: "hidden_m_conv2"           top_flow: -1
+	top: "hidden_m_conv3"           top_flow: -1
+	top: "hidden_m_conv4"           top_flow: -1
+	top: "hidden_m_conv5"           top_flow: -1
+	top: "hidden_m_conv6"           top_flow: -1
+	top: "hidden_n_conv2"           top_flow: -1
+	top: "hidden_n_conv3"           top_flow: -1
+	top: "hidden_n_conv4"           top_flow: -1
+	top: "hidden_n_conv5"           top_flow: -1
+	top: "hidden_n_conv6"           top_flow: -1
+	top: "hidden_g_deconv0"           top_flow: -1
+	top: "hidden_g_deconv1"           top_flow: -1
+	concat_param {
+		#encode
+		channels: 128
+		channels: 128
+		#
+		channels: 128
+		channels: 128
+		channels: 128
+		channels: 128
+		channels: 128
+		#
+		channels: 128
+		channels: 128
+		channels: 128
+		channels: 128
+		channels: 128
+		#
+		channels: 128
+		channels: 128
+		#decode
+	}
+}
+layer {
+  name: "hidden_d_conv1_fc"
+  type: "InnerProduct"
+  bottom: "hidden_d_conv1"     bottom_flow: -1
+  top: "hidden_d_conv1_fc"        top_flow: -1
+  inner_product_param {
+		num_output: 1152
+		bias_term: true
+  }
+  param { 
+	  lr_mult: 1
+	  decay_mult: 1
+	}
+	param { 
+	  lr_mult: 2
+	  decay_mult: 0
+	}
+}
+layer {
+  name: "hidden_d_conv2_fc"
+  type: "InnerProduct"
+  bottom: "hidden_d_conv2"     bottom_flow: -1
+  top: "hidden_d_conv2_fc"        top_flow: -1
+  inner_product_param {
+		num_output: 4608
+		bias_term: true
+  }
+  param { 
+	  lr_mult: 1
+	  decay_mult: 1
+	}
+	param { 
+	  lr_mult: 2
+	  decay_mult: 0
+	}
+}
+
+
+layer {
+  name: "hidden_m_conv2_fc"
+  type: "InnerProduct"
+  bottom: "hidden_m_conv2"     bottom_flow: -1
+  top: "hidden_m_conv2_fc"        top_flow: -1
+  inner_product_param {
+		num_output: 9216
+		bias_term: true
+  }
+  param { 
+	  lr_mult: 1
+	  decay_mult: 1
+	}
+	param { 
+	  lr_mult: 2
+	  decay_mult: 0
+	}
+}
+
+
+layer {
+  name: "hidden_n_conv2_fc"
+  type: "InnerProduct"
+  bottom: "hidden_n_conv2"     bottom_flow: -1
+  top: "hidden_n_conv2_fc"        top_flow: -1
+  inner_product_param {
+		num_output: 9216
+		bias_term: true
+  }
+  param { 
+	  lr_mult: 1
+	  decay_mult: 1
+	}
+	param { 
+	  lr_mult: 2
+	  decay_mult: 0
+	}
+}
+
+
+layer {
+  name: "hidden_m_conv3_fc"
+  type: "InnerProduct"
+  bottom: "hidden_m_conv3"     bottom_flow: -1
+  top: "hidden_m_conv3_fc"        top_flow: -1
+  inner_product_param {
+		num_output: 9216
+		bias_term: true
+  }
+  param { 
+	  lr_mult: 1
+	  decay_mult: 1
+	}
+	param { 
+	  lr_mult: 2
+	  decay_mult: 0
+	}
+}
+
+
+layer {
+  name: "hidden_n_conv3_fc"
+  type: "InnerProduct"
+  bottom: "hidden_n_conv3"     bottom_flow: -1
+  top: "hidden_n_conv3_fc"        top_flow: -1
+  inner_product_param {
+		num_output: 9216
+		bias_term: true
+  }
+  param { 
+	  lr_mult: 1
+	  decay_mult: 1
+	}
+	param { 
+	  lr_mult: 2
+	  decay_mult: 0
+	}
+}
+
+
+layer {
+  name: "hidden_m_conv4_fc"
+  type: "InnerProduct"
+  bottom: "hidden_m_conv4"     bottom_flow: -1
+  top: "hidden_m_conv4_fc"        top_flow: -1
+  inner_product_param {
+		num_output: 9216
+		bias_term: true
+  }
+  param { 
+	  lr_mult: 1
+	  decay_mult: 1
+	}
+	param { 
+	  lr_mult: 2
+	  decay_mult: 0
+	}
+}
+
+
+layer {
+  name: "hidden_n_conv4_fc"
+  type: "InnerProduct"
+  bottom: "hidden_n_conv4"     bottom_flow: -1
+  top: "hidden_n_conv4_fc"        top_flow: -1
+  inner_product_param {
+		num_output: 9216
+		bias_term: true
+  }
+  param { 
+	  lr_mult: 1
+	  decay_mult: 1
+	}
+	param { 
+	  lr_mult: 2
+	  decay_mult: 0
+	}
+}
+
+
+layer {
+  name: "hidden_m_conv5_fc"
+  type: "InnerProduct"
+  bottom: "hidden_m_conv5"     bottom_flow: -1
+  top: "hidden_m_conv5_fc"        top_flow: -1
+  inner_product_param {
+		num_output: 9216
+		bias_term: true
+  }
+  param { 
+	  lr_mult: 1
+	  decay_mult: 1
+	}
+	param { 
+	  lr_mult: 2
+	  decay_mult: 0
+	}
+}
+
+
+layer {
+  name: "hidden_n_conv5_fc"
+  type: "InnerProduct"
+  bottom: "hidden_n_conv5"     bottom_flow: -1
+  top: "hidden_n_conv5_fc"        top_flow: -1
+  inner_product_param {
+		num_output: 9216
+		bias_term: true
+  }
+  param { 
+	  lr_mult: 1
+	  decay_mult: 1
+	}
+	param { 
+	  lr_mult: 2
+	  decay_mult: 0
+	}
+}
+
+
+layer {
+  name: "hidden_m_conv6_fc"
+  type: "InnerProduct"
+  bottom: "hidden_m_conv6"     bottom_flow: -1
+  top: "hidden_m_conv6_fc"        top_flow: -1
+  inner_product_param {
+		num_output: 9216
+		bias_term: true
+  }
+  param { 
+	  lr_mult: 1
+	  decay_mult: 1
+	}
+	param { 
+	  lr_mult: 2
+	  decay_mult: 0
+	}
+}
+
+
+layer {
+  name: "hidden_n_conv6_fc"
+  type: "InnerProduct"
+  bottom: "hidden_n_conv6"     bottom_flow: -1
+  top: "hidden_n_conv6_fc"        top_flow: -1
+  inner_product_param {
+		num_output: 9216
+		bias_term: true
+  }
+  param { 
+	  lr_mult: 1
+	  decay_mult: 1
+	}
+	param { 
+	  lr_mult: 2
+	  decay_mult: 0
+	}
+}
+
+
+layer {
+  name: "hidden_g_deconv0_fc"
+  type: "InnerProduct"
+  bottom: "hidden_g_deconv0"     bottom_flow: -1
+  top: "hidden_g_deconv0_fc"        top_flow: -1
+  inner_product_param {
+		num_output: 8192
+		bias_term: true
+  }
+  param { 
+	  lr_mult: 1
+	  decay_mult: 1
+	}
+	param { 
+	  lr_mult: 2
+	  decay_mult: 0
+	}
+}
+
+
+layer {
+  name: "hidden_g_deconv1_fc"
+  type: "InnerProduct"
+  bottom: "hidden_g_deconv1"     bottom_flow: -1
+  top: "hidden_g_deconv1_fc"        top_flow: -1
+  inner_product_param {
+		num_output: 2048
+		bias_term: true
+  }
+  param { 
+	  lr_mult: 1
+	  decay_mult: 1
+	}
+	param { 
+	  lr_mult: 2
+	  decay_mult: 0
+	}
+}

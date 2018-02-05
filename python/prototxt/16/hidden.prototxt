@@ -1,0 +1,522 @@
+name: "resnet"
+#num_flow: 12
+input_blob {
+  name: "label"
+	num: 1
+	channels: 3
+	height: 320
+	width: 320
+}
+########################## 1st block 224x224 ##########################
+layer {
+		name: "fixed_conv1_1"
+		type: "CuDNNConvolution"
+		bottom: "label"    bottom_flow: -1
+		top: "fixed_conv1_1"       top_flow: 0
+		convolution_param {
+			num_output: 64
+			group: 1
+			pad: 1
+			kernel_size: 3
+			stride: 1
+			bias_term: true
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 0
+		}
+		include {
+			need_backward: false
+		}
+	}
+layer {
+  name: "fixed_relu1_1"
+  type: "ReLU"
+  bottom: "fixed_conv1_1"   bottom_flow: 0
+  top: "fixed_conv1_1"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: false
+	}
+}
+layer {
+		name: "fixed_conv1_2"
+		type: "CuDNNConvolution"
+		bottom: "fixed_conv1_1"    bottom_flow: 0
+		top: "fixed_conv1_2"       top_flow: 0
+		convolution_param {
+			num_output: 64
+			group: 1
+			pad: 1
+			kernel_size: 3
+			stride: 1
+			bias_term: true
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 0
+		}
+		include {
+			need_backward: false
+		}
+	}
+layer {
+  name: "fixed_relu1_2"
+  type: "ReLU"
+  bottom: "fixed_conv1_2"   bottom_flow: 0
+  top: "fixed_conv1_2"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: false
+	}
+}
+layer {
+  name: "fixed_conv1_2_split"
+  type: "Split"
+  bottom: "fixed_conv1_2"   bottom_flow: -1
+  top: "fixed_conv1_2"      top_flow: -1
+  top: "fixed_conv1_2_split"      top_flow: -1
+  include {
+			need_backward: false
+	}
+}
+layer {
+  name: "fixed_conv1_2_meanvar"
+  type: "MeanVariance"
+  bottom: "fixed_conv1_2_split"   bottom_flow: -1
+  top: "fixed_conv1_2_meanvar"      top_flow: -1
+  include {
+			need_backward: false
+	}
+}
+layer {
+  name: "fixed_pool1"
+  type: "Pooling"
+  bottom: "fixed_conv1_2"   bottom_flow: 0
+  top: "fixed_pool1"      top_flow: 0
+  pooling_param {
+    pool: "max"
+    kernel_size: 2
+    stride: 2
+    pad: 0
+  }
+  include {
+			need_backward: false
+	}
+}
+########################## 2nd block 112x112 ##########################
+layer {
+		name: "fixed_conv2_1"
+		type: "CuDNNConvolution"
+		bottom: "fixed_pool1"    bottom_flow: 0
+		top: "fixed_conv2_1"       top_flow: 0
+		convolution_param {
+			num_output: 128
+			group: 1
+			pad: 1
+			kernel_size: 3
+			stride: 1
+			bias_term: true
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 0
+		}
+		include {
+			need_backward: false
+		}
+	}
+layer {
+  name: "fixed_relu2_1"
+  type: "ReLU"
+  bottom: "fixed_conv2_1"   bottom_flow: 0
+  top: "fixed_conv2_1"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: false
+	}
+}
+layer {
+		name: "fixed_conv2_2"
+		type: "CuDNNConvolution"
+		bottom: "fixed_conv2_1"    bottom_flow: 0
+		top: "fixed_conv2_2"       top_flow: 0
+		convolution_param {
+			num_output: 128
+			group: 1
+			pad: 1
+			kernel_size: 3
+			stride: 1
+			bias_term: true
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 0
+		}
+		include {
+			need_backward: false
+		}
+	}
+layer {
+  name: "fixed_relu2_2"
+  type: "ReLU"
+  bottom: "fixed_conv2_2"   bottom_flow: 0
+  top: "fixed_conv2_2"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: false
+	}
+}
+layer {
+  name: "fixed_conv2_2_split"
+  type: "Split"
+  bottom: "fixed_conv2_2"   bottom_flow: -1
+  top: "fixed_conv2_2"      top_flow: -1
+  top: "fixed_conv2_2_split"      top_flow: -1
+  include {
+			need_backward: false
+	}
+}
+layer {
+  name: "fixed_conv2_2_meanvar"
+  type: "MeanVariance"
+  bottom: "fixed_conv2_2_split"   bottom_flow: -1
+  top: "fixed_conv2_2_meanvar"      top_flow: -1
+  include {
+			need_backward: false
+	}
+}
+layer {
+  name: "fixed_pool2"
+  type: "Pooling"
+  bottom: "fixed_conv2_2"   bottom_flow: 0
+  top: "fixed_pool2"      top_flow: 0
+  pooling_param {
+    pool: "max"
+    kernel_size: 2
+    stride: 2
+    pad: 0
+  }
+  include {
+			need_backward: false
+	}
+}
+########################## 3rd block 56x56 ##########################
+layer {
+		name: "fixed_conv3_1"
+		type: "CuDNNConvolution"
+		bottom: "fixed_pool2"    bottom_flow: 0
+		top: "fixed_conv3_1"       top_flow: 0
+		convolution_param {
+			num_output: 256
+			group: 1
+			pad: 1
+			kernel_size: 3
+			stride: 1
+			bias_term: true
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 0
+		}
+		include {
+			need_backward: false
+		}
+	}
+layer {
+  name: "fixed_relu3_1"
+  type: "ReLU"
+  bottom: "fixed_conv3_1"   bottom_flow: 0
+  top: "fixed_conv3_1"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: false
+	}
+}
+layer {
+		name: "fixed_conv3_2"
+		type: "CuDNNConvolution"
+		bottom: "fixed_conv3_1"    bottom_flow: 0
+		top: "fixed_conv3_2"       top_flow: 0
+		convolution_param {
+			num_output: 256
+			group: 1
+			pad: 1
+			kernel_size: 3
+			stride: 1
+			bias_term: true
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 0
+		}
+		include {
+			need_backward: false
+		}
+	}
+layer {
+  name: "fixed_relu3_2"
+  type: "ReLU"
+  bottom: "fixed_conv3_2"   bottom_flow: 0
+  top: "fixed_conv3_2"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: false
+	}
+}
+layer {
+		name: "fixed_conv3_3"
+		type: "CuDNNConvolution"
+		bottom: "fixed_conv3_2"    bottom_flow: 0
+		top: "fixed_conv3_3"       top_flow: 0
+		convolution_param {
+			num_output: 256
+			group: 1
+			pad: 1
+			kernel_size: 3
+			stride: 1
+			bias_term: true
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 0
+		}
+		include {
+			need_backward: false
+		}
+	}
+layer {
+  name: "fixed_relu3_3"
+  type: "ReLU"
+  bottom: "fixed_conv3_3"   bottom_flow: 0
+  top: "fixed_conv3_3"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: false
+	}
+}
+layer {
+  name: "fixed_conv3_3_split"
+  type: "Split"
+  bottom: "fixed_conv3_3"   bottom_flow: -1
+  top: "fixed_conv3_3"      top_flow: -1
+  top: "fixed_conv3_3_split"      top_flow: -1
+  include {
+			need_backward: false
+	}
+}
+layer {
+  name: "fixed_conv3_3_meanvar"
+  type: "MeanVariance"
+  bottom: "fixed_conv3_3_split"   bottom_flow: -1
+  top: "fixed_conv3_3_meanvar"      top_flow: -1
+  include {
+			need_backward: false
+	}
+}
+layer {
+  name: "fixed_pool3"
+  type: "Pooling"
+  bottom: "fixed_conv3_3"   bottom_flow: 0
+  top: "fixed_pool3"      top_flow: 0
+  pooling_param {
+    pool: "max"
+    kernel_size: 2
+    stride: 2
+    pad: 0
+  }
+  include {
+			need_backward: true
+	}
+}
+########################## 4th block 14x14 ##########################
+layer {
+		name: "fixed_conv4_1"
+		type: "CuDNNConvolution"
+		bottom: "fixed_pool3"    bottom_flow: 0
+		top: "fixed_conv4_1"       top_flow: 0
+		convolution_param {
+			num_output: 512
+			group: 1
+			pad: 1
+			kernel_size: 3
+			stride: 1
+			bias_term: true
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 0
+		}
+		include {
+			need_backward: false
+		}
+	}
+layer {
+  name: "fixed_relu4_1"
+  type: "ReLU"
+  bottom: "fixed_conv4_1"   bottom_flow: 0
+  top: "fixed_conv4_1"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: false
+	}
+}
+layer {
+		name: "fixed_conv4_2"
+		type: "CuDNNConvolution"
+		bottom: "fixed_conv4_1"    bottom_flow: 0
+		top: "fixed_conv4_2"       top_flow: 0
+		convolution_param {
+			num_output: 512
+			group: 1
+			pad: 1
+			kernel_size: 3
+			stride: 1
+			bias_term: true
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 0
+		}
+		include {
+			need_backward: false
+		}
+	}
+layer {
+  name: "fixed_relu4_2"
+  type: "ReLU"
+  bottom: "fixed_conv4_2"   bottom_flow: 0
+  top: "fixed_conv4_2"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: false
+	}
+}
+layer {
+		name: "fixed_conv4_3"
+		type: "CuDNNConvolution"
+		bottom: "fixed_conv4_2"    bottom_flow: 0
+		top: "fixed_conv4_3"       top_flow: 0
+		convolution_param {
+			num_output: 512
+			group: 1
+			pad: 1
+			kernel_size: 3
+			stride: 1
+			bias_term: true
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 1
+		}
+		param { 
+		  lr_mult: 0
+		  decay_mult: 0
+		}
+		include {
+			need_backward: false
+		}
+	}
+layer {
+  name: "fixed_relu4_3"
+  type: "ReLU"
+  bottom: "fixed_conv4_3"   bottom_flow: 0
+  top: "fixed_conv4_3"      top_flow: 0
+  relu_param {
+  	negative_slope: 0
+  }
+  include {
+			need_backward: false
+	}
+}
+layer {
+  name: "fixed_conv4_3_meanvar"
+  type: "MeanVariance"
+  bottom: "fixed_conv4_3"   bottom_flow: -1
+  top: "fixed_conv4_3_meanvar"      top_flow: -1
+  include {
+			need_backward: false
+	}
+}
+
+	layer {
+	name: "gt_style_feat"
+	type: "Concat"
+	bottom: "fixed_conv1_2_meanvar"     bottom_flow: -1
+	bottom: "fixed_conv2_2_meanvar"     bottom_flow: -1
+	bottom: "fixed_conv3_3_meanvar"     bottom_flow: -1
+	bottom: "fixed_conv4_3_meanvar"     bottom_flow: -1
+	top: "gt_style_feat"            top_flow: -1
+}
+layer {
+  name: "hidden_feat"
+  type: "InnerProduct"
+  bottom: "gt_style_feat"     bottom_flow: -1
+  top: "hidden_feat"        top_flow: -1
+  inner_product_param {
+		num_output: 1792
+		bias_term: true
+  }
+  param { 
+	  lr_mult: 1
+	  decay_mult: 1
+	}
+	param { 
+	  lr_mult: 2
+	  decay_mult: 0
+	}
+}
