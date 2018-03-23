@@ -4,13 +4,13 @@ Neural Style Transfer
 =====
 
 
-This repository is for [Neural Style Transfer Via Style Transfer](https://arxiv.org/abs/1709.04111). The meta network takes in the style image and generated an image transformation network for neural style transfer. The fast generated model is only `449KB`, which is able to real-time execute on a mobile device. For more details please refer and cite this paper
+This repository is for [Neural Style Transfer Via Meta Networks]. The meta network takes in the style image and generated an image transformation network for neural style transfer. The fast generated model is only `449KB`, which is able to real-time execute on a mobile device. For more details please refer and cite this paper
 
-    @inproceedings{shen2017style,
+    @inproceedings{shen2018style,
       author = {Falong Shen, Shuicheng Yan and Gang Zeng},
-      title = {Meta Networks for Neural Style Transfer},
-      booktitle = {arXiv:1709.04111},
-      year = {2017}
+      title = {Neural Style Transfer Via Meta Networks},
+      booktitle = {CVPR2018},
+      year = {2018}
     }
 
 Installation
