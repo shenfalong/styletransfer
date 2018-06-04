@@ -14,7 +14,7 @@ This repository is for [Neural Style Transfer Via Meta Networks]. The meta netwo
     }
 
 <div align=center>
-<img src="python/vide.gif", width="500" height="300"/>
+<img src="python/video.gif", width="500" height="300"/>
 </div>
 
 
