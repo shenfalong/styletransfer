@@ -13,6 +13,11 @@ This repository is for [Neural Style Transfer Via Meta Networks]. The meta netwo
       year = {2018}
     }
 
+<div align=center>
+<img src="python/vide.gif", width="500" height="300"/>
+</div>
+
+
 Installation
 ----
 This library is based on [Caffe](https://github.com/BVLC/caffe). [CuDNN 7](https://developer.nvidia.com/cudnn) and [NCCL 1](https://github.com/NVIDIA/nccl) are required. Please follow
