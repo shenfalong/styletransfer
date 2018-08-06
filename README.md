@@ -53,3 +53,7 @@ Python code. Please execute the scripts in Python folder. Meta model is very hug
     Meta model [train_32](http://pan.baidu.com/s/1eRQI01O) (`968M`), generated model is `7MB`.</br>
     
 Put these models into <font color=red>python/model/<font> and modify the model name in <font color=red>demo.py<font>.
+
+Pytorch implementation
+----
+https://ypw.io/style-transfer/
